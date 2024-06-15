@@ -1,26 +1,38 @@
 import React from 'react'
+import TopicCard from '@/components/TopicCard';
 import RemoveBtn from './RemoveBtn'
 import Link from 'next/link'
 import {HiPencilAlt} from 'react-icons/hi'
 
-const TopicsList = () => {
-  return (
-    <>
-        <div className="p-4 border-2 border-slate-300 shadow-md my-3 flex justify-between items-start gap-5">
-            <div>
-                <h2 className="font-bold text-2xl">Topic Title</h2>
-                <div>Topic Description</div>
-            </div>
-
-            <div className="flex gap-2">
-                <RemoveBtn />
-                <Link href={"/editTopic/123"}>
-                    <HiPencilAlt size={24} />    
-                </Link>
-            </div>
-        </div>
-    </>
-  )
+const getTopics = async () => {
+    try {
+        const res = await fetch('http://localhost:3000/api/topics', {
+            cache: "no-store",
+        });
+        if (!res.ok) {
+            throw new Error(res.statusText)
+        }
+        return res.json();
+    } catch (error) {
+        console.log(error)
+    }
 }
 
-export default TopicsList
+export default async function TopicsList() {
+
+
+    const {topics} = await getTopics();
+
+    console.log(topics)
+
+    return (
+        <>
+            {topics.map( (topic) => {
+                return (
+                    <TopicCard key={topic._id} topic={topic} />
+                )
+            })}
+        </>
+    )
+}
+
